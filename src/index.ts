@@ -50,9 +50,10 @@ await client
   });
 
 let i = 1;
-
+let k = 0;
 const me = await client.getMe();
 const myId = me.id.toString();
+let lastMessageId: null | number = null;
 
 while (true) {
   try {
@@ -64,6 +65,22 @@ while (true) {
         `!Ошибка в рут-боте!
 ${json.error}`,
       );
+    } else {
+      if (!lastMessageId) {
+        const message = await telegraf.telegram.sendMessage(
+          me.id.toString(),
+          `Бот исправен, последнее обновление: ${Date.now() - json.lastUpdate}ms назад`,
+        );
+        lastMessageId = message.message_id;
+      } else if (k % 100 === 0) {
+        await telegraf.telegram.editMessageText(
+          me.id.toString(),
+          lastMessageId,
+          undefined,
+          `Бот исправен, последнее обновление: ${((Date.now() - json.lastUpdate) / 1000).toFixed(0)}s назад`,
+        );
+      }
+      k++;
     }
 
     if (json.new_gifts.length) {
