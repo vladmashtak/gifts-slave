@@ -66,7 +66,6 @@ while (true) {
 ${json.error}`,
       );
     } else {
-      a;
       if (!lastMessageId) {
         const message = await telegraf.telegram.sendMessage(
           me.id.toString(),
