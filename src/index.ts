@@ -136,6 +136,7 @@ ${json.new_gifts.map((x) => `Id: ${x.id}, Supply: ${x.supply}, Price: ${x.price}
           giftsToSend--;
         }
       }
+      i++;
     } else {
       await delay(100);
     }
