@@ -69,7 +69,7 @@ ${json.error}`,
       if (!lastMessageId) {
         const message = await telegraf.telegram.sendMessage(
           me.id.toString(),
-          `Бот исправен, последнее обновление: ${new Date().toLocaleString()}`,
+          `Бот исправен, последнее обновление: ${new Date().toLocaleString()}(UTC+0)`,
         );
         lastMessageId = message.message_id;
       } else if (k % 100 === 0) {
@@ -77,7 +77,7 @@ ${json.error}`,
           me.id.toString(),
           lastMessageId,
           undefined,
-          `Бот исправен, последнее обновление: ${new Date().toLocaleString()}`,
+          `Бот исправен, последнее обновление: ${new Date().toLocaleString()}(UTC+0)`,
         );
       }
       k++;
