@@ -122,17 +122,16 @@ ${json.new_gifts.map((x) => `Id: ${x.id}, Supply: ${x.supply}, Price: ${x.price}
 
         const giftToBuy = giftsSortedBySupply.find((gift) => {
           const { supply, price } = gift;
-          if (supply <= 2500) {
+          if (supply <= 8000) {
             return true;
-          } else if (supply <= 5000 && price <= 25000) {
+          }
+          if (supply <= 20000 && price <= 5000) {
             return true;
-          } else if (supply <= 25000 && price <= 10000) {
+          } else if (supply <= 50000 && price <= 2000) {
             return true;
-          } else if (supply <= 50000 && price <= 5000) {
+          } else if (supply <= 120000 && price <= 1000) {
             return true;
-          } else if (supply <= 150000 && price <= 2000) {
-            return true;
-          } else if (price < 500) {
+          } else if (price <= 500) {
             return true;
           }
         });
@@ -156,7 +155,7 @@ ${json.new_gifts.map((x) => `Id: ${x.id}, Supply: ${x.supply}, Price: ${x.price}
           );
         }
 
-        let giftsToSend = giftToBuy.supply < 100000 ? 10 : 50;
+        let giftsToSend = giftToBuy.supply <= 50000 ? 3 : 10;
 
         const updates = (await client.invoke(
           new Api.channels.CreateChannel({
@@ -202,7 +201,7 @@ ${json.new_gifts.map((x) => `Id: ${x.id}, Supply: ${x.supply}, Price: ${x.price}
       console.error(error);
       console.log("Some unhandled error, restarting in 3 secs");
       await telegraf.telegram.sendMessage(myId, `Ошибка в slave-боте!`);
-      await delay(3000);
+      await delay(1500);
     }
   }
 }
