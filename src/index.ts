@@ -79,6 +79,7 @@ telegraf.command("startbuys", (ctx) => {
 
 telegraf.launch();
 
+let j = 0;
 while (true) {
   if (isBotStopped) {
     await delay(1000);
@@ -120,21 +121,10 @@ ${json.new_gifts.map((x) => `Id: ${x.id}, Supply: ${x.supply}, Price: ${x.price}
 
         const giftsSortedBySupply = json.new_gifts.sort((a, b) => a.supply - b.supply);
 
-        const giftToBuy = giftsSortedBySupply.find((gift) => {
-          const { supply, price } = gift;
-          if (supply <= 8000) {
-            return true;
-          }
-          if (supply <= 20000 && price <= 5000) {
-            return true;
-          } else if (supply <= 50000 && price <= 2000) {
-            return true;
-          } else if (supply <= 120000 && price <= 1000) {
-            return true;
-          } else if (price <= 500) {
-            return true;
-          }
-        });
+        const giftToBuy = giftsSortedBySupply[j];
+        if (!giftToBuy) {
+          j = 0;
+        }
 
         const { balance } = await client.invoke(
           new Api.payments.GetStarsTransactions({
@@ -155,7 +145,7 @@ ${json.new_gifts.map((x) => `Id: ${x.id}, Supply: ${x.supply}, Price: ${x.price}
           );
         }
 
-        let giftsToSend = giftToBuy.supply <= 50000 ? 3 : 10;
+        let giftsToSend = giftToBuy.supply <= 50000 ? 2 : 5;
 
         const updates = (await client.invoke(
           new Api.channels.CreateChannel({
@@ -198,6 +188,7 @@ ${json.new_gifts.map((x) => `Id: ${x.id}, Supply: ${x.supply}, Price: ${x.price}
         await delay(100);
       }
     } catch (error) {
+      j++;
       console.error(error);
       console.log("Some unhandled error, restarting in 3 secs");
       await telegraf.telegram.sendMessage(myId, `Ошибка в slave-боте!`);
