@@ -85,7 +85,7 @@ while (true) {
 
     const gifts = starGifts.gifts.filter((gift) => gift.className === "StarGift");
     const limitedGifts = gifts.filter((gift) => gift.limited);
-    const availableLimitedGifts = limitedGifts.filter((gift) => gift.soldOut);
+    const availableLimitedGifts = limitedGifts.filter((gift) => !gift.soldOut);
 
     const starsStatus = await client.invoke(new Api.payments.GetStarsStatus({ peer: new InputPeerSelf() }));
     const balance = starsStatus.balance.amount.toJSNumber();
@@ -113,7 +113,7 @@ while (true) {
     }
 
     try {
-      let giftsToSend = giftToBuy.availabilityTotal! <= 30000 ? 1 : 5;
+      let giftsToSend = giftToBuy.availabilityTotal! <= 30000 ? 2 : 5;
       const updates = (await client.invoke(
         new Api.channels.CreateChannel({
           title: `@giftsatellite autobuy`,
