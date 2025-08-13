@@ -2,10 +2,9 @@ import { Api, sessions, TelegramClient } from "teleproto";
 import delay from "delay";
 import BigInteger from "big-integer";
 import { Telegraf } from "telegraf";
-// @ts-ignore
-import input from "input";
 
 import { env } from "./env.js";
+import { ask } from "./helpers.js";
 
 import GetPaymentForm = Api.payments.GetPaymentForm;
 import SendStarsForm = Api.payments.SendStarsForm;
@@ -19,9 +18,9 @@ const client = new TelegramClient(storeSession, Number(env.API_ID), env.API_HASH
 });
 
 await client.start({
-  phoneNumber: async () => input.text("Номер телефона:"),
-  password: async () => input.text("TFA Password:"),
-  phoneCode: async () => input.text("Код телеграмм:"),
+  phoneNumber: async () => ask("Введите номер телефона:"),
+  password: async () => ask("Введите пароль:"),
+  phoneCode: async () => ask("Введите код телеграмм:"),
   onError: (err) => {
     console.error("Telegram error:", err);
     process.exit(0);
@@ -148,6 +147,7 @@ while (true) {
         giftsToSend--;
       }
     } catch (error) {
+      lastMessageId = null;
       await telegraf.telegram.sendMessage(myId, `Ошибка в slave-боте!`);
       await delay(1500);
     }
