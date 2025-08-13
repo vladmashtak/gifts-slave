@@ -67,20 +67,25 @@ while (true) {
   if (isBotStopped) {
     await delay(1000);
   } else {
-    if (!lastMessageId) {
-      const message = await telegraf.telegram.sendMessage(
-        me.id.toString(),
-        `Бот исправен, последнее обновление: ${new Date().toLocaleString()}(UTC+0)`,
-      );
-      lastMessageId = message.message_id;
-    } else if (cycleCount % 50 === 0) {
-      await telegraf.telegram.editMessageText(
-        me.id.toString(),
-        lastMessageId,
-        undefined,
-        `Бот исправен, последнее обновление: ${new Date().toLocaleString()}(UTC+0)`,
-      );
+    try {
+      if (!lastMessageId) {
+        const message = await telegraf.telegram.sendMessage(
+          me.id.toString(),
+          `Бот исправен, последнее обновление: ${new Date().toLocaleString()}(UTC+0)`,
+        );
+        lastMessageId = message.message_id;
+      } else if (cycleCount % 50 === 0) {
+        await telegraf.telegram.editMessageText(
+          me.id.toString(),
+          lastMessageId,
+          undefined,
+          `Бот исправен, последнее обновление: ${new Date().toLocaleString()}(UTC+0)`,
+        );
+      }
+    } catch (err) {
+      console.log("Ошибка отправки сообщения в тг бота", err);
     }
+
     const starGifts = (await client.invoke(new GetStarGifts({ hash: 0 }))) as Api.payments.StarGifts;
 
     const gifts = starGifts.gifts.filter((gift) => gift.className === "StarGift");
