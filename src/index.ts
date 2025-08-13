@@ -73,7 +73,7 @@ while (true) {
         `Бот исправен, последнее обновление: ${new Date().toLocaleString()}(UTC+0)`,
       );
       lastMessageId = message.message_id;
-    } else if (cycleCount % 10 === 0) {
+    } else if (cycleCount % 50 === 0) {
       await telegraf.telegram.editMessageText(
         me.id.toString(),
         lastMessageId,
@@ -91,7 +91,7 @@ while (true) {
     const balance = starsStatus.balance.amount.toJSNumber();
 
     if (availableLimitedGifts.length === 0) {
-      await delay(2500);
+      await delay(1000);
       continue;
     }
 
