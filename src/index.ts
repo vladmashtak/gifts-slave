@@ -117,7 +117,7 @@ while (true) {
     }
 
     try {
-      let giftsToSend = giftToBuy.availabilityTotal! <= 30000 ? 2 : 5;
+      let giftsToSend = giftToBuy.availabilityTotal! <= 30000 ? 3 : 10;
       const updates = (await client.invoke(
         new Api.channels.CreateChannel({
           title: `@giftsatellite autobuy`,
