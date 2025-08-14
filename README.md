@@ -35,6 +35,7 @@ https://my.telegram.org/auth – регистрируем приложение, 
 3. Вводим ip сервера, username – root и пароль, которые мы получили в предыдущем шаге в соответствующие поля.![new host termius](/public/7.png)
 4. Вводим в командную строку следующие команды по одной:
 - ```curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash```
+- ```source ~/.bashrc```
 - ```nvm install --lts```
 - ```npm install -g pm2```
 - ```git clone https://github.com/m1stervlad/gifts-slave```
