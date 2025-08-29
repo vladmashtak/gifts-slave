@@ -76,6 +76,18 @@ await telegraf.telegram.setMyCommands([
     command: "addpeer",
     description: "Добавить получателя",
   },
+  {
+    command: "setminsupply",
+    description: "Установить максимальный supply setminsupply 0-10000000",
+  },
+  {
+    command: "setmaxsupply",
+    description: "Установить максимальный supply setmaxsupply 0-10000000",
+  },
+  {
+    command: "setsort",
+    description: "Изменить порядок сортировки",
+  },
   { command: "deletepeer", description: "Удалить последнего получателя" },
 ]);
 
@@ -93,6 +105,84 @@ telegraf.command("startbuys", (ctx) => {
 telegraf.command("deletepeer", async (ctx) => {
   config.peers = config.peers.slice(0, -1);
   await saveConfig(config);
+  await updateStatus();
+});
+
+function parsePositiveInt(s: string): number | null {
+  const n = Number(s);
+  if (!Number.isInteger(n) || n < 0) return null;
+  return n;
+}
+
+telegraf.command("setminsupply", async (ctx) => {
+  const args = ctx.message.text.split(" ").slice(1);
+  const value = parsePositiveInt(args[0]);
+
+  if (value === null) {
+    await ctx.reply("❌ Укажите целое число. Пример: /setminsupply 5000");
+    return;
+  }
+
+  if (value > config.maxSupply) {
+    await ctx.reply(`❌ Минимум (${value}) не может быть больше максимума (${config.maxSupply}).`);
+    return;
+  }
+
+  config.minSupply = value;
+  await saveConfig(config);
+  await ctx.reply(`✅ Минимальный сапплай установлен: ${value}`);
+  lastMessageId = null;
+  await updateStatus();
+});
+
+telegraf.command("setmaxsupply", async (ctx) => {
+  const args = ctx.message.text.split(" ").slice(1);
+  const value = parsePositiveInt(args[0]);
+
+  if (value === null) {
+    await ctx.reply("❌ Укажите целое число. Пример: /setmaxsupply 1000000");
+    return;
+  }
+
+  if (value < config.minSupply) {
+    await ctx.reply(`❌ Максимум (${value}) не может быть меньше минимума (${config.minSupply}).`);
+    return;
+  }
+
+  config.maxSupply = value;
+  await saveConfig(config);
+  await ctx.reply(`✅ Максимальный сапплай установлен: ${value}`);
+  lastMessageId = null;
+  await updateStatus();
+});
+
+telegraf.command("setsort", async (ctx) => {
+  await ctx.reply(
+    "Выберите порядок сортировки:",
+    Markup.inlineKeyboard([
+      [Markup.button.callback("По возрастанию supply", "sort_asc")],
+      [Markup.button.callback("По убыванию supply", "sort_desc")],
+    ]),
+  );
+});
+
+telegraf.action("sort_asc", async (ctx) => {
+  config.sort = "supply_asc";
+  await saveConfig(config);
+  await ctx.answerCbQuery();
+  await ctx.reply("✅ Сортировка установлена: по возрастанию");
+  lastMessageId = null;
+  await updateStatus();
+});
+
+telegraf.action("sort_desc", async (ctx) => {
+  config.sort = "supply_desc";
+  await saveConfig(config);
+
+  await ctx.answerCbQuery();
+  await ctx.reply("✅ Сортировка установлена: по убыванию");
+
+  lastMessageId = null;
   await updateStatus();
 });
 
