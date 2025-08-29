@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { writeFile, unlink } from "node:fs/promises";
+import { writeFile, unlink, rm } from "node:fs/promises";
 import path from "node:path";
 import { ask, validateApiId, validateNotEmpty } from "./helpers.js";
 import { sessions, TelegramClient } from "teleproto";
@@ -11,10 +11,15 @@ type Answers = {
 };
 
 const ENV_PATH = path.resolve(process.cwd(), ".env");
+const SESSION_PATH = path.resolve(process.cwd(), "session_folder");
 
 async function main() {
   console.log("⚙️  Настройка окружения (.env)\n");
 
+  if (existsSync(SESSION_PATH)) {
+    console.log(`Удаляю существующую сессию: ${SESSION_PATH}`);
+    await rm(SESSION_PATH, { recursive: true, force: true });
+  }
   if (existsSync(ENV_PATH)) {
     console.log(`Удаляю существующий .env: ${ENV_PATH}`);
     await unlink(ENV_PATH);
