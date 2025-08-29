@@ -396,11 +396,16 @@ while (true) {
       }
     })();
 
-    config.peers = config.peers.slice(1);
-    await saveConfig(config);
-
     if (!peer) {
+      config.peers = config.peers.slice(1);
+      await saveConfig(config);
       continue;
+    }
+
+    peerConfig.maxCollections--;
+    if (peerConfig.maxCollections <= 0) {
+      config.peers = config.peers.slice(1);
+      await saveConfig(config);
     }
 
     if (giftToBuy.limitedPerUser) {
