@@ -228,7 +228,7 @@ while (true) {
     const starGifts = (await client.invoke(new GetStarGifts({ hash: 0 }))) as Api.payments.StarGifts;
 
     const gifts = starGifts.gifts.filter((gift) => gift.className === "StarGift");
-    const limitedGifts = gifts.filter((gift) => !gift.limited);
+    const limitedGifts = gifts.filter((gift) => gift.limited);
     const availableLimitedGifts = limitedGifts.filter((gift) => !gift.soldOut);
 
     const starsStatus = await client.invoke(new Api.payments.GetStarsStatus({ peer: new InputPeerSelf() }));
