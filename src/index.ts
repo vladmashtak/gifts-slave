@@ -242,6 +242,8 @@ telegraf.action("peer_user", async (ctx) => {
 });
 
 telegraf.on(message("text"), async (ctx) => {
+  if (ctx.from.id.toString() !== env.ADMIN_ID.toString()) return;
+
   const userId = ctx.from.id;
   const state = userStates.get(userId);
   if (!state) return;
