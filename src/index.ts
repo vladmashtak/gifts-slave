@@ -63,6 +63,18 @@ async function updateStatus() {
   }
 }
 
+const auth = (ctx: any): boolean => {
+  if (!ctx || !ctx.from || !ctx.from.id) {
+    return false;
+  }
+  if (!env || !env.ADMIN_ID) {
+    return false;
+  }
+
+  return ctx.from.id.toString() !== env.ADMIN_ID.toString();
+}
+
+
 await telegraf.telegram.setMyCommands([
   {
     command: "stopbuys",
@@ -92,17 +104,23 @@ await telegraf.telegram.setMyCommands([
 ]);
 
 telegraf.command("stopbuys", (ctx) => {
+  if (auth(ctx)) return;
+
   isBotStopped = true;
   lastMessageId = null;
   ctx.reply("бот остановлен");
 });
 
 telegraf.command("startbuys", (ctx) => {
+  if (auth(ctx)) return;
+
   isBotStopped = false;
   ctx.reply("бот запущен");
 });
 
 telegraf.command("deletepeer", async (ctx) => {
+  if (auth(ctx)) return;
+
   config.peers = config.peers.slice(0, -1);
   await saveConfig(config);
   await updateStatus();
@@ -115,6 +133,8 @@ function parsePositiveInt(s: string): number | null {
 }
 
 telegraf.command("setminsupply", async (ctx) => {
+  if (auth(ctx)) return;
+
   const args = ctx.message.text.split(" ").slice(1);
   const value = parsePositiveInt(args[0]);
 
@@ -136,6 +156,8 @@ telegraf.command("setminsupply", async (ctx) => {
 });
 
 telegraf.command("setmaxsupply", async (ctx) => {
+  if (auth(ctx)) return;
+
   const args = ctx.message.text.split(" ").slice(1);
   const value = parsePositiveInt(args[0]);
 
@@ -198,7 +220,7 @@ interface UserState {
 const userStates = new Map<number, UserState>();
 
 telegraf.command("addpeer", async (ctx) => {
-  if (ctx.from.id.toString() !== env.ADMIN_ID.toString()) return;
+  if (auth(ctx)) return;
 
   const userId = ctx.from.id;
   userStates.set(userId, { step: "choose_target" });
@@ -215,7 +237,7 @@ telegraf.command("addpeer", async (ctx) => {
 
 // ================== CALLBACKS ==================
 telegraf.action("peer_self", async (ctx) => {
-  if (ctx.from.id.toString() !== env.ADMIN_ID.toString()) return;
+  if (auth(ctx)) return;
 
   const userId = ctx.from.id;
   userStates.set(userId, { step: "wait_gift_count", target: "self" });
@@ -224,7 +246,7 @@ telegraf.action("peer_self", async (ctx) => {
 });
 
 telegraf.action("peer_channel", async (ctx) => {
-  if (ctx.from.id.toString() !== env.ADMIN_ID.toString()) return;
+  if (auth(ctx)) return;
 
   const userId = ctx.from.id;
   userStates.set(userId, { step: "wait_gift_count", target: "channel" });
@@ -233,7 +255,7 @@ telegraf.action("peer_channel", async (ctx) => {
 });
 
 telegraf.action("peer_user", async (ctx) => {
-  if (ctx.from.id.toString() !== env.ADMIN_ID.toString()) return;
+  if (auth(ctx)) return;
 
   const userId = ctx.from.id;
   userStates.set(userId, { step: "wait_username", target: "user" });
@@ -242,7 +264,7 @@ telegraf.action("peer_user", async (ctx) => {
 });
 
 telegraf.on(message("text"), async (ctx) => {
-  if (ctx.from.id.toString() !== env.ADMIN_ID.toString()) return;
+  if (auth(ctx)) return;
 
   const userId = ctx.from.id;
   const state = userStates.get(userId);
