@@ -198,6 +198,8 @@ interface UserState {
 const userStates = new Map<number, UserState>();
 
 telegraf.command("addpeer", async (ctx) => {
+  if (ctx.from.id.toString() !== env.ADMIN_ID.toString()) return;
+
   const userId = ctx.from.id;
   userStates.set(userId, { step: "choose_target" });
 
@@ -213,6 +215,8 @@ telegraf.command("addpeer", async (ctx) => {
 
 // ================== CALLBACKS ==================
 telegraf.action("peer_self", async (ctx) => {
+  if (ctx.from.id.toString() !== env.ADMIN_ID.toString()) return;
+
   const userId = ctx.from.id;
   userStates.set(userId, { step: "wait_gift_count", target: "self" });
   await ctx.answerCbQuery();
@@ -220,6 +224,8 @@ telegraf.action("peer_self", async (ctx) => {
 });
 
 telegraf.action("peer_channel", async (ctx) => {
+  if (ctx.from.id.toString() !== env.ADMIN_ID.toString()) return;
+
   const userId = ctx.from.id;
   userStates.set(userId, { step: "wait_gift_count", target: "channel" });
   await ctx.answerCbQuery();
@@ -227,6 +233,8 @@ telegraf.action("peer_channel", async (ctx) => {
 });
 
 telegraf.action("peer_user", async (ctx) => {
+  if (ctx.from.id.toString() !== env.ADMIN_ID.toString()) return;
+
   const userId = ctx.from.id;
   userStates.set(userId, { step: "wait_username", target: "user" });
   await ctx.answerCbQuery();
